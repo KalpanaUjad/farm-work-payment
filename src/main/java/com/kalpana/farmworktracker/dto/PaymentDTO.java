@@ -1,8 +1,13 @@
 package com.kalpana.farmworktracker.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class PaymentDTO {
     private Long id;
+    @NotBlank(message = "Work type is required")
     private String date;
+    @Positive(message = "Amount must be greater than 0")
     private Double amount;
 
     public PaymentDTO(Long id, String date, Double amount) {

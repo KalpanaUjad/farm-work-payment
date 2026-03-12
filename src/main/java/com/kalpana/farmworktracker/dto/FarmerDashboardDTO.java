@@ -1,9 +1,14 @@
 package com.kalpana.farmworktracker.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 public class FarmerDashboardDTO {
 
     private Long id;
+    @NotBlank(message="Farmer name is required")
     private String name;
+    @Pattern(regexp = "^[0-9]{10}$", message="Mobile number must be 10 degits")
     private String mobile;
     private Double pending;
     private Double totalWork;

@@ -152,30 +152,74 @@ public class FarmerService {
     }
     
     
+//    public Payment addPayment(Long farmerId, Payment payment) {
+//
+//        Farmer farmer = farmerRepository.findById(farmerId)
+//                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+//        
+//        Double totalWork = workRepository.getTotalWorkAmount(farmerId);
+//        Double totalPayment = paymentRepository.getTotalPaymentAmount(farmerId);
+//
+//        if(totalWork == null) totalWork = 0.0;
+//        if(totalPayment == null) totalPayment = 0.0;
+//
+//        if(totalWork == 0){
+//            throw new RuntimeException("Cannot add payment. No work recorded.");
+//        }
+//
+//        Double pending = totalWork - totalPayment;
+//
+//        if(pending <= 0){
+//            throw new RuntimeException("No pending amount. Payment cannot be added.");
+//        }
+//        if(payment.getAmount() > pending){
+//            throw new RuntimeException("Payment exceeds pending amount");
+//        }
+//        
+//        payment.setFarmer(farmer);
+//
+//        return paymentRepository.save(payment);
+//    }
+    
     public Payment addPayment(Long farmerId, Payment payment) {
 
         Farmer farmer = farmerRepository.findById(farmerId)
                 .orElseThrow(() -> new RuntimeException("Farmer not found"));
-        
+
+        // Validate amount
+        if (payment.getAmount() == null || payment.getAmount() <= 0) {
+            throw new RuntimeException("Payment amount must be greater than zero");
+        }
+
+        // Validate payment date
+        if (payment.getPaymentDate() == null) {
+            throw new RuntimeException("Payment date is required");
+        }
+
+        if (payment.getPaymentDate().isAfter(LocalDate.now())) {
+            throw new RuntimeException("Future payment date is not allowed");
+        }
+
         Double totalWork = workRepository.getTotalWorkAmount(farmerId);
         Double totalPayment = paymentRepository.getTotalPaymentAmount(farmerId);
 
-        if(totalWork == null) totalWork = 0.0;
-        if(totalPayment == null) totalPayment = 0.0;
+        if (totalWork == null) totalWork = 0.0;
+        if (totalPayment == null) totalPayment = 0.0;
 
-        if(totalWork == 0){
+        if (totalWork == 0) {
             throw new RuntimeException("Cannot add payment. No work recorded.");
         }
 
         Double pending = totalWork - totalPayment;
 
-        if(pending <= 0){
+        if (pending <= 0) {
             throw new RuntimeException("No pending amount. Payment cannot be added.");
         }
-        if(payment.getAmount() > pending){
+
+        if (payment.getAmount() > pending) {
             throw new RuntimeException("Payment exceeds pending amount");
         }
-        
+
         payment.setFarmer(farmer);
 
         return paymentRepository.save(payment);

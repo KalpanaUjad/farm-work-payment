@@ -1,10 +1,15 @@
 package com.kalpana.farmworktracker.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class WorkDTO {
 	private Long farmerId;
+	@NotBlank(message="Work type is required")
     private String workType;
     private String cropType;
     private String unitType;
+    @Positive(message="quantity must be greater than 0")
     private Double quantity;
     private Double rate; 
     private Long id;

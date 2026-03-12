@@ -3,6 +3,7 @@ package com.kalpana.farmworktracker.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,8 @@ import com.kalpana.farmworktracker.entity.Farmer;
 import com.kalpana.farmworktracker.entity.Payment;
 import com.kalpana.farmworktracker.service.FarmerService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/farmers")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -28,8 +31,8 @@ public class FarmerController {
     private FarmerService farmerService;
 
     @PostMapping
-    public Farmer addFarmer(@RequestBody Farmer farmer){
-        return farmerService.addFarmer(farmer);
+    public ResponseEntity<Farmer> addFarmer(@Valid @RequestBody Farmer farmer){
+        return ResponseEntity.ok(farmerService.addFarmer(farmer));
     }
     @GetMapping
     public List<FarmerDashboardDTO> getFarmersDashboard() {
@@ -44,8 +47,8 @@ public class FarmerController {
     }
 
     @PostMapping("/work")
-    public WorkDTO addWork(@RequestBody WorkDTO dto){
-        return farmerService.addWork(dto);
+    public ResponseEntity<WorkDTO> addWork(@Valid @RequestBody WorkDTO dto){
+        return ResponseEntity.ok(farmerService.addWork(dto));
     }
 
     @GetMapping("/{farmerId}/summary")
@@ -54,11 +57,12 @@ public class FarmerController {
     }
 
     @PostMapping("/{farmerId}/payments")
-    public Payment addPayment(
+    public ResponseEntity<Payment> addPayment(
             @PathVariable Long farmerId,
+            @Valid
             @RequestBody Payment payment){
 
-        return farmerService.addPayment(farmerId, payment);
+        return ResponseEntity.ok(farmerService.addPayment(farmerId, payment));
     }
 
     @GetMapping("/payment/{farmerId}")
