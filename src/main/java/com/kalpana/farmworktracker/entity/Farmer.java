@@ -24,7 +24,7 @@ public class Farmer {
 	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true )
 	@JsonIgnore
     private List<Work> works;
-//
+
     @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Payment> payments;
@@ -37,7 +37,7 @@ public class Farmer {
 		this.name = name;
 		this.mobile = mobile;
 		this.village = village;
-//		this.works = works;
+		this.works = works;
 		this.payments = payments;
 	}
 

@@ -7,5 +7,5 @@ import com.kalpana.farmworktracker.entity.Farmer;
 
 @Repository
 public interface FarmerRepository extends JpaRepository<Farmer, Long> {
-
+	
 }
