@@ -15,6 +15,8 @@ import com.kalpana.farmworktracker.dto.WorkDTO;
 import com.kalpana.farmworktracker.entity.Farmer;
 import com.kalpana.farmworktracker.entity.Payment;
 import com.kalpana.farmworktracker.entity.Work;
+import com.kalpana.farmworktracker.exception.FarmerNotFoundException;
+import com.kalpana.farmworktracker.exception.InvalidPaymentException;
 import com.kalpana.farmworktracker.repository.FarmerRepository;
 import com.kalpana.farmworktracker.repository.PaymentRepository;
 import com.kalpana.farmworktracker.repository.WorkRepository;
@@ -91,7 +93,7 @@ public class FarmerService {
 	
 	public FarmerSummaryDTO getSummary(Long farmerId) {
 	    Farmer farmer = farmerRepository.findById(farmerId)
-	                     .orElseThrow(() -> new RuntimeException("Farmer not found"));
+	                     .orElseThrow(() -> new FarmerNotFoundException("Farmer not found"));
 
 	    Double totalWork = workRepository.getTotalWorkAmount(farmerId);
 	    Double totalPayment = paymentRepository.getTotalPaymentAmount(farmerId);
@@ -119,14 +121,15 @@ public class FarmerService {
         return farmerRepository.findAll();
     }
 
-    public Farmer getFarmerById(Long id){
-        return farmerRepository.findById(id).orElse(null);
-    }
+	public Farmer getFarmerById(Long id){
+	    return farmerRepository.findById(id)
+	            .orElseThrow(()->new FarmerNotFoundException("Farmer not found"));
+	}
 
     public WorkDTO addWork(WorkDTO dto) {
 
         Farmer farmer = farmerRepository.findById(dto.getFarmerId())
-                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+                .orElseThrow(() -> new FarmerNotFoundException("Farmer not found"));
 
         Work work = new Work();
 
@@ -184,20 +187,20 @@ public class FarmerService {
     public Payment addPayment(Long farmerId, Payment payment) {
 
         Farmer farmer = farmerRepository.findById(farmerId)
-                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+                .orElseThrow(() -> new FarmerNotFoundException("Farmer not found"));
 
         // Validate amount
         if (payment.getAmount() == null || payment.getAmount() <= 0) {
-            throw new RuntimeException("Payment amount must be greater than zero");
+            throw new InvalidPaymentException("Payment amount must be greater than zero");
         }
 
         // Validate payment date
         if (payment.getPaymentDate() == null) {
-            throw new RuntimeException("Payment date is required");
+            throw new InvalidPaymentException("Payment date is required");
         }
 
         if (payment.getPaymentDate().isAfter(LocalDate.now())) {
-            throw new RuntimeException("Future payment date is not allowed");
+            throw new InvalidPaymentException("Future payment date is not allowed");
         }
 
         Double totalWork = workRepository.getTotalWorkAmount(farmerId);
@@ -207,17 +210,17 @@ public class FarmerService {
         if (totalPayment == null) totalPayment = 0.0;
 
         if (totalWork == 0) {
-            throw new RuntimeException("Cannot add payment. No work recorded.");
+            throw new InvalidPaymentException("Cannot add payment. No work recorded.");
         }
 
         Double pending = totalWork - totalPayment;
 
         if (pending <= 0) {
-            throw new RuntimeException("No pending amount. Payment cannot be added.");
+            throw new InvalidPaymentException("No pending amount. Payment cannot be added.");
         }
 
         if (payment.getAmount() > pending) {
-            throw new RuntimeException("Payment exceeds pending amount");
+            throw new InvalidPaymentException("Payment exceeds pending amount");
         }
 
         payment.setFarmer(farmer);

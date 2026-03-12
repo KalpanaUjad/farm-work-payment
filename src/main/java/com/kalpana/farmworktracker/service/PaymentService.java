@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.kalpana.farmworktracker.entity.Farmer;
 import com.kalpana.farmworktracker.entity.Payment;
+import com.kalpana.farmworktracker.exception.FarmerNotFoundException;
+import com.kalpana.farmworktracker.exception.InvalidPaymentException;
+import com.kalpana.farmworktracker.exception.PaymentNotFoundException;
 import com.kalpana.farmworktracker.repository.FarmerRepository;
 import com.kalpana.farmworktracker.repository.PaymentRepository;
 import com.kalpana.farmworktracker.repository.WorkRepository;
@@ -25,10 +28,10 @@ public class PaymentService {
 
     public Payment addPayment(Long farmerId, Payment payment){
     	if(payment.getPaymentDate().isAfter(LocalDate.now())){
-    	    throw new RuntimeException("Payment date cannot be in the future");
+    	    throw new InvalidPaymentException("Payment date cannot be in the future");
     	}
         Farmer farmer = farmerRepository.findById(farmerId)
-                .orElseThrow(() -> new RuntimeException("Farmer not found"));
+                .orElseThrow(() -> new FarmerNotFoundException("Farmer not found"));
         
         Double totalWork = workRepository.getTotalWorkAmount(farmerId);
         Double totalPayment = paymentRepository.getTotalPaymentAmount(farmerId);
@@ -40,7 +43,7 @@ public class PaymentService {
 
         // 🚨 Critical validation
         if(payment.getAmount() > pending){
-            throw new RuntimeException("Payment exceeds pending amount");
+            throw new InvalidPaymentException("Payment exceeds pending amount");
         }
 
         
@@ -53,10 +56,17 @@ public class PaymentService {
 		return paymentRepository.findById(farmerId).orElse(null);
 	}
 	
+//    public Payment getPayment(Long paymentId) {
+//        return paymentRepository.findById(paymentId)
+//                .orElseThrow(() ->
+//                        new PaymentNotFoundException("Payment not found with id " + paymentId)
+//                );
+//    }
+    
 	public void deletePayment(Long paymentId){
 
 	    if(!paymentRepository.existsById(paymentId)){
-	        throw new RuntimeException("Payment not found");
+	        throw new PaymentNotFoundException("Payment not found");
 	    }
 
 	    paymentRepository.deleteById(paymentId);
