@@ -28,9 +28,10 @@ public class Work {
     @PrePersist
     @PreUpdate
     public void calculateTotalAmount(){
-        if(quantity != null && rate != null){
-            this.totalAmount = quantity * rate;
-        }
+//        if(quantity != null && rate != null){
+//            this.totalAmount = this.quantity * this.rate;
+//        }
+    	this.totalAmount=this.quantity * this.rate;
     }
 
 	public Work() {

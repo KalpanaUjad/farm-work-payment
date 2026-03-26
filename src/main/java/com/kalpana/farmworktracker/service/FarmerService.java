@@ -3,6 +3,7 @@ package com.kalpana.farmworktracker.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ import com.kalpana.farmworktracker.repository.FarmerRepository;
 import com.kalpana.farmworktracker.repository.PaymentRepository;
 import com.kalpana.farmworktracker.repository.WorkRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FarmerService {
 	@Autowired
@@ -31,34 +34,6 @@ public class FarmerService {
 	
 	@Autowired
 	private WorkRepository workRepository;
-	
-//	public List<FarmerDashboardDTO> getFarmersDashboard() {
-//
-//    List<Farmer> farmers = farmerRepository.findAll();
-//
-//    List<FarmerDashboardDTO> dashboardList = new ArrayList<>();
-//
-//    for (Farmer farmer : farmers) {
-//
-//        FarmerDashboardDTO dto = new FarmerDashboardDTO();
-//
-//        dto.setId(farmer.getId());
-//        dto.setName(farmer.getName());
-//        dto.setMobile(farmer.getMobile());
-//
-//        Double totalWork = workRepository.getTotalWorkAmount(farmer.getId());
-//
-//        if (totalWork == null) {
-//            totalWork = 0.0;
-//        }
-//
-//        dto.setTotalWork(totalWork);
-//
-//        dashboardList.add(dto);
-//    }
-//
-//    return dashboardList;
-//}
 	
 	public List<FarmerDashboardDTO> getFarmersDashboard() {
 
@@ -154,36 +129,7 @@ public class FarmerService {
         return response;
     }
     
-    
-//    public Payment addPayment(Long farmerId, Payment payment) {
-//
-//        Farmer farmer = farmerRepository.findById(farmerId)
-//                .orElseThrow(() -> new RuntimeException("Farmer not found"));
-//        
-//        Double totalWork = workRepository.getTotalWorkAmount(farmerId);
-//        Double totalPayment = paymentRepository.getTotalPaymentAmount(farmerId);
-//
-//        if(totalWork == null) totalWork = 0.0;
-//        if(totalPayment == null) totalPayment = 0.0;
-//
-//        if(totalWork == 0){
-//            throw new RuntimeException("Cannot add payment. No work recorded.");
-//        }
-//
-//        Double pending = totalWork - totalPayment;
-//
-//        if(pending <= 0){
-//            throw new RuntimeException("No pending amount. Payment cannot be added.");
-//        }
-//        if(payment.getAmount() > pending){
-//            throw new RuntimeException("Payment exceeds pending amount");
-//        }
-//        
-//        payment.setFarmer(farmer);
-//
-//        return paymentRepository.save(payment);
-//    }
-    
+    @Transactional
     public Payment addPayment(Long farmerId, Payment payment) {
 
         Farmer farmer = farmerRepository.findById(farmerId)
@@ -271,4 +217,5 @@ public class FarmerService {
     }
     
     
+     
 }

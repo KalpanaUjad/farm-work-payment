@@ -14,6 +14,8 @@ import com.kalpana.farmworktracker.repository.FarmerRepository;
 import com.kalpana.farmworktracker.repository.PaymentRepository;
 import com.kalpana.farmworktracker.repository.WorkRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class PaymentService {
 
@@ -26,6 +28,7 @@ public class PaymentService {
     @Autowired
     private WorkRepository workRepository;
 
+    @Transactional
     public Payment addPayment(Long farmerId, Payment payment){
     	if(payment.getPaymentDate().isAfter(LocalDate.now())){
     	    throw new InvalidPaymentException("Payment date cannot be in the future");
